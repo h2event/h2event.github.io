@@ -49,6 +49,7 @@
   <script type="text/javascript">
     const btn = document.querySelector(".btn");
     const inputbox = document.querySelector(".scanned-content");
+    const hint = document.querySelector(".hint");
     btn.addEventListener("click", (event)=> {
       inputbox.select();
       inputbox.setSelectionRange(0, 99999);
@@ -75,7 +76,6 @@
       });
       scanner.addListener('scan', function (content) {
         inputbox.value = content;
-        alert("已複製條碼內容到剪貼簿");
       });
     
   </script>

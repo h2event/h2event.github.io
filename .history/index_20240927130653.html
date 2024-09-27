@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+  <input class="result" type="text" disabled> 
+  <button class="btn btn-primary" type="button">Save</button>
+  <div class="hint">
+    <h2>已偵測到條碼！</h2>
+  </div>
+  
+
+</head>
+<body>
+  <video id="preview" playsinline></video>
+  <script src="./instascan.min.js"></script>
+  <script type="text/javascript">
+    const btn = document.querySelector(".btn");
+    const inputbox = document.querySelector(".result");
+    const hint = document.querySelector(".hint");
+    hint.style.display = "none";
+    btn.addEventListener("click", (event)=> {
+      inputbox.select();
+      inputbox.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(inputbox.value);
+    });
+    let opts = {
+      continuous: true,
+      mirror: true,
+      video: document.getElementById('preview'),
+      captureImage: true,
+      backgroundScan: true,
+      refractoryPeriod: 5000,
+      scanPeriod: 1
+    };
+    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') , opts});
+    scanner.addListener('scan', function (content) {
+      inputbox.value = content;
+      hint.style.display = "block";
+    });
+    Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 0) {
+        scanner.start(cameras[0]);
+      } else {
+        console.error('No cameras found.');
+      }
+    }).catch(function (e) {
+      console.error(e);
+    });
+
+    
+  </script>
+</body>
+</html>
