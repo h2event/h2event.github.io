@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" width="device-width" />
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+  <style>
+    .preview{
+      margin: 10px auto 0 auto;
+      width: 90%;
+    }
+    .content-wrapper{
+      display: block;
+      overflow: hidden;
+    }
+
+    .content-wrapper input{
+      width: 95%;
+      margin: 10px auto;
+      display: block;
+      line-height: 20px;
+    }
+
+    .content-wrapper button{
+        display: block;
+        width: 50%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    video{
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview">
+    <video id="preview" playsinline></video>  
+    <div class="content-wrapper">
+      <input class="scanned-content" type="text" disabled> 
+      <button class="btn btn-primary" type="button">複製條碼內容</button>
+    </div>
+  </div>
+  <script src="./instascan.min.js"></script>
+  <script type="text/javascript">
+    const { collection, addDoc } = firebase.firestore;
+    const app = firebase.initializeApp({
+      projectId: 'oct-abbott-cgm-sales-pro-553e2'
+    });
+    const db = firebase.firestore.getFirestore(app);
+    const btn = document.querySelector(".btn");
+    const inputbox = document.querySelector(".scanned-content");
+    btn.addEventListener("click", (event)=> {
+      inputbox.select();
+      inputbox.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(inputbox.value);
+    });
+    let opts = {
+      continuous: true,
+      video: document.getElementById('preview'),
+      mirror: false,
+      backgroundScan: true,
+      refractoryPeriod: 5000,
+      scanPeriod: 1
+    };
+    let scanner = new Instascan.Scanner(opts);
+      Instascan.Camera.getCameras().then(function (cameras) {
+        if (cameras.length > 0) {
+          scanner.start(cameras[0]);
+        } else {
+          console.error('No cameras found.');
+        }
+      }).catch(function (e) {
+        console.error(e);
+      });
+      scanner.addListener('scan', function (content) {
+        inputbox.value = content;
+        alert("已複製條碼內容到剪貼簿");
+        addData(content);
+      });
+
+  async function addData(data) {
+      try {
+        const docRef = await addDoc(collection(db, "records"), {
+          cgm_no: data.content,
+          clinic_id: "好診所"
+        });
+        console.log("文檔寫入成功，ID: ", docRef.id);
+      } catch (error) {
+        console.error("寫入文檔失敗: ", error);
+      }
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js'
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js'
+  </script>
+</body>
+</html>

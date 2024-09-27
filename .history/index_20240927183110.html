@@ -100,8 +100,8 @@
 
     submitBtn.addEventListener("click", (event) => {
       addData({
-        cgmNo: cgmNumberInput.value,
-        clinicName: clinicNameInput.value,
+        cgm_no: cgmNumberInput.value,
+        clinic_name: clinicNameInput.value,
       });
     });
 
@@ -109,8 +109,8 @@
     async function addData(data) {
       try {
         const docRef = await addDoc(collection(db, "records"), {
-          cgm_no: data.cgmNo,
-          clinic_id: data.clinicName
+          cgm_no: data.cgm_no,
+          clinic_id: data.clinic_name
         });
         console.log("文檔寫入成功，ID: ", docRef.id);
       } catch (error) {

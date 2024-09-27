@@ -15,7 +15,13 @@
     .content-wrapper{
       display: block;
       overflow: hidden;
-      margin-top: 20px;
+    }
+
+    .content-wrapper input{
+      width: 95%;
+      margin: 10px auto;
+      display: block;
+      line-height: 20px;
     }
 
     .content-wrapper button{
@@ -34,21 +40,10 @@
 <body>
   <div class="preview">
     <video id="preview" playsinline></video>  
-    <form>
-      <div class="form-group">
-        <label for="CGMNumber">CGM條碼</label>
-        <input type="search" class="form-control" id="cgmNumber" placeholder="請掃描CGM外包裝條碼，或直接手動輸入">
-      </div>
-      <div class="form-group">
-        <label for="clinicName">診所名稱</label>
-        <input type="text" class="form-control" id="clinicName" placeholder="請輸入診所名稱">
-      </div>
-    </form>
-
     <div class="content-wrapper">
-      <button class="btn btn-primary" id="submit" type="button">確認送出</button>
+      <input class="scanned-content" type="text"> 
+      <button class="btn btn-primary" type="button">確認送出</button>
     </div>
-
   </div>
   <script src="./instascan.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -67,9 +62,12 @@
     const db = getFirestore(app);
 
     // DOM 操作
-    const submitBtn = document.querySelector("#submit");
-    const cgmNumberInput = document.querySelector("#cgmNumber");
-    const clinicNameInput = document.querySelector("#clinicName");
+    const btn = document.querySelector(".btn");
+    const inputbox = document.querySelector(".scanned-content");
+
+    btn.addEventListener("click", (event) => {
+      addData(content);
+    });
 
     // 設置 Instascan
     let opts = {
@@ -95,22 +93,15 @@
 
     // 偵測條碼並寫入資料
     scanner.addListener('scan', function (content) {
-      cgmNumberInput.value = content;
-    });
-
-    submitBtn.addEventListener("click", (event) => {
-      addData({
-        cgmNo: cgmNumberInput.value,
-        clinicName: clinicNameInput.value,
-      });
+      inputbox.value = content;
     });
 
     // 將條碼內容寫入 Firestore
     async function addData(data) {
       try {
         const docRef = await addDoc(collection(db, "records"), {
-          cgm_no: data.cgmNo,
-          clinic_id: data.clinicName
+          cgm_no: data,
+          clinic_id: "好診所"
         });
         console.log("文檔寫入成功，ID: ", docRef.id);
       } catch (error) {

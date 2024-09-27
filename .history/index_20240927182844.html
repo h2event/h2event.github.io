@@ -69,7 +69,7 @@
     // DOM 操作
     const submitBtn = document.querySelector("#submit");
     const cgmNumberInput = document.querySelector("#cgmNumber");
-    const clinicNameInput = document.querySelector("#clinicName");
+    const clinicName = document.querySelector("#clinicName");
 
     // 設置 Instascan
     let opts = {
@@ -95,13 +95,13 @@
 
     // 偵測條碼並寫入資料
     scanner.addListener('scan', function (content) {
-      cgmNumberInput.value = content;
+      CgmNumberInput.value = content;
     });
 
-    submitBtn.addEventListener("click", (event) => {
+    btn.addEventListener("click", (event) => {
       addData({
-        cgmNo: cgmNumberInput.value,
-        clinicName: clinicNameInput.value,
+        cgm_no: cgmNumberInput.value,
+        clinic_name: clinci
       });
     });
 
@@ -109,8 +109,8 @@
     async function addData(data) {
       try {
         const docRef = await addDoc(collection(db, "records"), {
-          cgm_no: data.cgmNo,
-          clinic_id: data.clinicName
+          cgm_no: data,
+          clinic_id: "好診所"
         });
         console.log("文檔寫入成功，ID: ", docRef.id);
       } catch (error) {
