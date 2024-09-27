@@ -55,15 +55,14 @@
       navigator.clipboard.writeText(inputbox.value);
     });
     let opts = {
-      video: document.getElementById('preview'),
-      mirror: false,
       continuous: true,
+      mirror: false,
       video: document.getElementById('preview'),
       backgroundScan: true,
       refractoryPeriod: 5000,
       scanPeriod: 1
     };
-    let scanner = new Instascan.Scanner(opts);
+    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') , opts});
       Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
           scanner.start(cameras[0]);
